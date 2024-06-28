@@ -44,26 +44,33 @@ func (s *APIServer) Run() {
 
 	router.HandleFunc("/account", makeHTTPHandleFunc(s.handleAccount))
 
+	router.HandleFunc("/account/{id}", makeHTTPHandleFunc(s.handleGetAccount))
+
 	log.Println("JSON API Server running on", s.listenAddr)
 
 	http.ListenAndServe(s.listenAddr, router)
+
 }
 
 func (s *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
-	if r.Method != "GET" {
+	if r.Method == "GET" {
 		return s.handleGetAccount(w, r)
 	}
-	if r.Method != "POST" {
+	if r.Method == "POST" {
 		return s.handleCreateAccount(w, r)
 	}
-	if r.Method != "Delete" {
+	if r.Method == "Delete" {
 		return s.handleDeleteAccount(w, r)
 	}
-	return fmt.Errorf("Unsupported method: %s", r.Method)
+	return fmt.Errorf("unsupported method: %s", r.Method)
 }
 
 func (s *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	id := mux.Vars(r)["id"]
+
+	fmt.Println(id)
+
+	return WriteJSON(w, http.StatusOK, &Account{})
 }
 
 func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) error {
