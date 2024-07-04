@@ -19,7 +19,12 @@ type PostgresStore struct {
 }
 
 func NewPostgresStore() (*PostgresStore, error) {
-	connStr := "user=postgres dbname=postgres password=gobank sslmode=disable"
+
+	dbUser := GoDotEnvVariable("DB_USER")
+	dbName := GoDotEnvVariable("DB_NAME")
+	dbPassword := GoDotEnvVariable("DB_PASSWORD")
+
+	connStr := fmt.Sprintf("user=%s dbname=%s password=%s sslmode=disable", dbUser, dbName, dbPassword)
 	db, err := sql.Open("postgres", connStr)
 
 	if err != nil {
